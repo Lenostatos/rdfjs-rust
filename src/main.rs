@@ -1,3 +1,5 @@
+use std::{error::Error, fmt};
+
 #[derive(Clone, PartialEq)]
 pub struct NamedNode {
     pub term_type: &'static str,
@@ -12,12 +14,20 @@ impl NamedNode {
         }
     }
 
-    pub fn equals(&self, other: &TermType) -> bool {
-        if let TermType::NamedNode(t) = other {
+    pub fn equals(&self, other: &Term) -> bool {
+        if let TermType::NamedNode(t) = &other.term {
             self == t
         } else {
             false
         }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::NamedNode(self.clone())
+    }
+
+    fn to_term(&self) -> Term {
+        Term { term_type: self.term_type, value: self.value.clone(), term: self.to_term_type() }
     }
 }
 
@@ -35,12 +45,20 @@ impl BlankNode {
         }
     }
 
-    pub fn equals(&self, other: &TermType) -> bool {
-        if let TermType::BlankNode(t) = other {
+    pub fn equals(&self, other: &Term) -> bool {
+        if let TermType::BlankNode(t) = &other.term {
             self == t
         } else {
             false
         }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::BlankNode(self.clone())
+    }
+
+    fn to_term(&self) -> Term {
+        Term { term_type: self.term_type, value: self.value.clone(), term: self.to_term_type() }
     }
 }
 
@@ -70,12 +88,20 @@ impl Literal {
         }
     }
 
-    pub fn equals(&self, other: &TermType) -> bool {
-        if let TermType::Literal(t) = other {
+    pub fn equals(&self, other: &Term) -> bool {
+        if let TermType::Literal(t) = &other.term {
             self == t
         } else {
             false
         }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::Literal(self.clone())
+    }
+
+    fn to_term(&self) -> Term {
+        Term { term_type: self.term_type, value: self.value.clone(), term: self.to_term_type() }
     }
 }
 
@@ -93,12 +119,20 @@ impl Variable {
         }
     }
 
-    pub fn equals(&self, other: &TermType) -> bool {
-        if let TermType::Variable(t) = other {
+    pub fn equals(&self, other: &Term) -> bool {
+        if let TermType::Variable(t) = &other.term {
             self == t
         } else {
             false
         }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::Variable(self.clone())
+    }
+
+    fn to_term(&self) -> Term {
+        Term { term_type: self.term_type, value: self.value.clone(), term: self.to_term_type() }
     }
 }
 
@@ -116,17 +150,25 @@ impl DefaultGraph {
         }
     }
 
-    pub fn equals(&self, other: &TermType) -> bool {
-        if let TermType::DefaultGraph(t) = other {
+    pub fn equals(&self, other: &Term) -> bool {
+        if let TermType::DefaultGraph(t) = &other.term {
             self == t
         } else {
             false
         }
     }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::DefaultGraph(self.clone())
+    }
+
+    fn to_term(&self) -> Term {
+        Term { term_type: self.term_type, value: self.value.clone(), term: self.to_term_type() }
+    }
 }
 
-#[derive(Clone)]
-pub enum TermType {
+#[derive(Clone, PartialEq)]
+enum TermType {
     NamedNode(NamedNode),
     BlankNode(BlankNode),
     Literal(Literal),
@@ -169,6 +211,7 @@ impl TermType {
     }
 }
 
+#[derive(Clone, PartialEq)]
 pub struct Term {
     pub term_type: &'static str,
     pub value: String,
@@ -177,11 +220,19 @@ pub struct Term {
 }
 
 impl Term {
-    pub fn new(term: &TermType) -> Term {
-        Self { 
-            term_type: term.term_type(), 
-            value: term.value().to_string(), 
-            term: term.clone()
+    pub fn new(
+        term_type: &'static str, 
+        value: &str, 
+        language: Option<&str>, 
+        datatype: Option<&NamedNode>
+    ) -> Result<Term, InvalidTermTypeError> {
+        match term_type {
+            "NamedNode" => Ok(NamedNode::new(value).to_term()),
+            "BlankNode" => Ok(BlankNode::new(value).to_term()),
+            "Literal" => Ok(Literal::new(value, language, datatype).to_term()),
+            "Variable" => Ok(Variable::new(value).to_term()),
+            "DefaultGraph" => Ok(DefaultGraph::new(value).to_term()),
+            _ => Err(InvalidTermTypeError { invalid_term_type: term_type.to_string() })
         }
     }
 
@@ -189,6 +240,19 @@ impl Term {
         self.term.equals(&other.term)
     }
 }
+
+#[derive(Debug)]
+pub struct InvalidTermTypeError {
+    invalid_term_type: String
+}
+
+impl fmt::Display for InvalidTermTypeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Invalid term type: {}", self.invalid_term_type)
+    }
+}
+
+impl Error for InvalidTermTypeError {}
 
 pub struct Quad {
     pub subject: Term,
