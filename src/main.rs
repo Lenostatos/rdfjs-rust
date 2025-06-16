@@ -12,8 +12,8 @@ impl NamedNode {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let Term::NamedNode(t) = other {
+    pub fn equals(&self, other: &TermType) -> bool {
+        if let TermType::NamedNode(t) = other {
             self == t
         } else {
             false
@@ -21,7 +21,7 @@ impl NamedNode {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct BlankNode {
     pub term_type: &'static str,
     pub value: String
@@ -35,8 +35,8 @@ impl BlankNode {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let Term::BlankNode(t) = other {
+    pub fn equals(&self, other: &TermType) -> bool {
+        if let TermType::BlankNode(t) = other {
             self == t
         } else {
             false
@@ -44,7 +44,7 @@ impl BlankNode {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct Literal {
     pub term_type: &'static str,
     pub value: String,
@@ -70,8 +70,8 @@ impl Literal {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let Term::Literal(t) = other {
+    pub fn equals(&self, other: &TermType) -> bool {
+        if let TermType::Literal(t) = other {
             self == t
         } else {
             false
@@ -79,7 +79,7 @@ impl Literal {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct Variable {
     pub term_type: &'static str,
     pub value: String
@@ -93,8 +93,8 @@ impl Variable {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let Term::Variable(t) = other {
+    pub fn equals(&self, other: &TermType) -> bool {
+        if let TermType::Variable(t) = other {
             self == t
         } else {
             false
@@ -102,7 +102,7 @@ impl Variable {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct DefaultGraph {
     pub term_type: &'static str,
     pub value: String
@@ -116,8 +116,8 @@ impl DefaultGraph {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let Term::DefaultGraph(t) = other {
+    pub fn equals(&self, other: &TermType) -> bool {
+        if let TermType::DefaultGraph(t) = other {
             self == t
         } else {
             false
@@ -125,7 +125,8 @@ impl DefaultGraph {
     }
 }
 
-pub enum Term {
+#[derive(Clone)]
+pub enum TermType {
     NamedNode(NamedNode),
     BlankNode(BlankNode),
     Literal(Literal),
@@ -133,40 +134,59 @@ pub enum Term {
     DefaultGraph(DefaultGraph),
 }
 
-impl Term {
+impl TermType {
     pub fn term_type(&self) -> &'static str {
         match self {
-            Term::BlankNode(t) => t.term_type,
-            Term::DefaultGraph(t) => t.term_type,
-            Term::Literal(t) => t.term_type,
-            Term::NamedNode(t) => t.term_type,
-            Term::Variable(t) => t.term_type,
+            TermType::BlankNode(t) => t.term_type,
+            TermType::DefaultGraph(t) => t.term_type,
+            TermType::Literal(t) => t.term_type,
+            TermType::NamedNode(t) => t.term_type,
+            TermType::Variable(t) => t.term_type,
         }
     }
 
     pub fn value(&self) -> &str {
         match self {
-            Term::BlankNode(t) => &t.value,
-            Term::DefaultGraph(t) => &t.value,
-            Term::Literal(t) => &t.value,
-            Term::NamedNode(t) => &t.value,
-            Term::Variable(t) => &t.value,
+            TermType::BlankNode(t) => &t.value,
+            TermType::DefaultGraph(t) => &t.value,
+            TermType::Literal(t) => &t.value,
+            TermType::NamedNode(t) => &t.value,
+            TermType::Variable(t) => &t.value,
         }
     }
 
     pub fn equals(&self, other: &Self) -> bool {
         match self {
-            Term::Literal(t) => match other {
-                Term::Literal(o) => {
-                    t.value == o.value &&
-                        t.datatype.value == o.datatype.value &&
-                        t.language == t.language
+            TermType::Literal(t) => match other {
+                TermType::Literal(o) => {
+                    t == o
                 },
                 _ => false
             },
             _ => self.term_type() == other.term_type() && 
                 self.value() == other.value()
         }
+    }
+}
+
+pub struct Term {
+    pub term_type: &'static str,
+    pub value: String,
+
+    term: TermType
+}
+
+impl Term {
+    pub fn new(term: &TermType) -> Term {
+        Self { 
+            term_type: term.term_type(), 
+            value: term.value().to_string(), 
+            term: term.clone()
+        }
+    }
+
+    pub fn equals(&self, other: &Term) -> bool {
+        self.term.equals(&other.term)
     }
 }
 
