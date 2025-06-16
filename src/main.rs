@@ -1,4 +1,4 @@
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct NamedNode {
     pub term_type: &'static str,
     pub value: String,
@@ -33,7 +33,7 @@ impl NamedNode {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct BlankNode {
     pub term_type: &'static str,
     pub value: String
@@ -68,7 +68,7 @@ impl BlankNode {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Literal {
     pub term_type: &'static str,
     pub value: String,
@@ -115,7 +115,7 @@ impl Literal {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Variable {
     pub term_type: &'static str,
     pub value: String
@@ -150,7 +150,7 @@ impl Variable {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct DefaultGraph {
     pub term_type: &'static str,
     pub value: String
@@ -185,7 +185,7 @@ impl DefaultGraph {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 enum TermType<'a> {
     NamedNode(&'a NamedNode),
     BlankNode(&'a BlankNode),
@@ -229,7 +229,7 @@ impl TermType<'_> {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Term<'a> {
     pub term_type: &'static str,
     pub value: String,
