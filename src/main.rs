@@ -14,21 +14,33 @@ impl NamedNode {
 
     pub fn equals(&self, other: &Term) -> bool {
         if let TermType::NamedNode(t) = &other.term_type_enum {
-            self == *t
+            self == t
         } else {
             false
         }
     }
 
-    fn as_term_type(&self) -> TermType {
-        TermType::NamedNode(&self)
+    fn as_term_type(self) -> TermType {
+        TermType::NamedNode(self)
     }
 
-    pub fn as_term(&self) -> Term {
-        Term { 
-            term_type: self.term_type, 
-            value: self.value.clone(), 
-            term_type_enum: self.as_term_type() 
+    pub fn as_term(self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.as_term_type()
+        }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::NamedNode(self.clone())
+    }
+
+    pub fn to_term(&self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.to_term_type()
         }
     }
 }
@@ -49,21 +61,33 @@ impl BlankNode {
 
     pub fn equals(&self, other: &Term) -> bool {
         if let TermType::BlankNode(t) = &other.term_type_enum {
-            self == *t
+            self == t
         } else {
             false
         }
     }
 
-    fn as_term_type(&self) -> TermType {
-        TermType::BlankNode(&self)
+    fn as_term_type(self) -> TermType {
+        TermType::BlankNode(self)
     }
 
-    pub fn as_term(&self) -> Term {
-        Term { 
-            term_type: self.term_type, 
-            value: self.value.clone(), 
-            term_type_enum: self.as_term_type() 
+    pub fn as_term(self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.as_term_type()
+        }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::BlankNode(self.clone())
+    }
+
+    pub fn to_term(&self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.to_term_type()
         }
     }
 }
@@ -96,21 +120,33 @@ impl Literal {
 
     pub fn equals(&self, other: &Term) -> bool {
         if let TermType::Literal(t) = &other.term_type_enum {
-            self == *t
+            self == t
         } else {
             false
         }
     }
 
-    fn as_term_type(&self) -> TermType {
-        TermType::Literal(&self)
+    fn as_term_type(self) -> TermType {
+        TermType::Literal(self)
     }
 
-    pub fn as_term(&self) -> Term {
-        Term { 
-            term_type: self.term_type, 
-            value: self.value.clone(), 
-            term_type_enum: self.as_term_type() 
+    pub fn as_term(self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.as_term_type()
+        }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::Literal(self.clone())
+    }
+
+    pub fn to_term(&self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.to_term_type()
         }
     }
 }
@@ -131,21 +167,33 @@ impl Variable {
 
     pub fn equals(&self, other: &Term) -> bool {
         if let TermType::Variable(t) = &other.term_type_enum {
-            self == *t
+            self == t
         } else {
             false
         }
     }
 
-    fn as_term_type(&self) -> TermType {
-        TermType::Variable(&self)
+    fn as_term_type(self) -> TermType {
+        TermType::Variable(self)
     }
 
-    pub fn as_term(&self) -> Term {
-        Term { 
-            term_type: self.term_type, 
-            value: self.value.clone(), 
-            term_type_enum: self.as_term_type() 
+    pub fn as_term(self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.as_term_type()
+        }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::Variable(self.clone())
+    }
+
+    pub fn to_term(&self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.to_term_type()
         }
     }
 }
@@ -166,35 +214,47 @@ impl DefaultGraph {
 
     pub fn equals(&self, other: &Term) -> bool {
         if let TermType::DefaultGraph(t) = &other.term_type_enum {
-            self == *t
+            self == t
         } else {
             false
         }
     }
 
-    fn as_term_type(&self) -> TermType {
-        TermType::DefaultGraph(&self)
+    fn as_term_type(self) -> TermType {
+        TermType::DefaultGraph(self)
     }
 
-    pub fn as_term(&self) -> Term {
-        Term { 
-            term_type: self.term_type, 
-            value: self.value.clone(), 
-            term_type_enum: self.as_term_type() 
+    pub fn as_term(self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.as_term_type()
+        }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::DefaultGraph(self.clone())
+    }
+
+    pub fn to_term(&self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.clone(),
+            term_type_enum: self.to_term_type()
         }
     }
 }
 
 #[derive(Clone, PartialEq, Eq)]
-enum TermType<'a> {
-    NamedNode(&'a NamedNode),
-    BlankNode(&'a BlankNode),
-    Literal(&'a Literal),
-    Variable(&'a Variable),
-    DefaultGraph(&'a DefaultGraph),
+pub enum TermType {
+    NamedNode(NamedNode),
+    BlankNode(BlankNode),
+    Literal(Literal),
+    Variable(Variable),
+    DefaultGraph(DefaultGraph),
 }
 
-impl TermType<'_> {
+impl TermType {
     pub fn term_type(&self) -> &'static str {
         match self {
             TermType::BlankNode(t) => t.term_type,
@@ -223,34 +283,42 @@ impl TermType<'_> {
                 },
                 _ => false
             },
-            _ => self.term_type() == other.term_type() && 
+            _ => self.term_type() == other.term_type() &&
                 self.value() == other.value()
         }
     }
 }
 
 #[derive(Clone, PartialEq, Eq)]
-pub struct Term<'a> {
+pub struct Term {
     pub term_type: &'static str,
     pub value: String,
 
-    term_type_enum: TermType<'a>
+    term_type_enum: TermType
 }
 
-impl Term<'_> {
+impl Term {
     pub fn equals(&self, other: &Term) -> bool {
         self.term_type_enum.equals(&other.term_type_enum)
     }
+
+    pub fn as_specific_term(self) -> TermType {
+        self.term_type_enum
+    }
+
+    pub fn to_specific_term(&self) -> TermType {
+        self.term_type_enum.clone()
+    }
 }
 
-pub struct Quad<'a> {
-    pub subject: Term<'a>,
-    pub predicate: Term<'a>,
-    pub object: Term<'a>,
-    pub graph: Term<'a>
+pub struct Quad {
+    pub subject: Term,
+    pub predicate: Term,
+    pub object: Term,
+    pub graph: Term
 }
 
-impl Quad<'_> {
+impl Quad {
     pub fn equals(&self, other: &Quad) -> bool {
         self.subject.equals(&other.subject) &&
         self.predicate.equals(&other.predicate) &&
