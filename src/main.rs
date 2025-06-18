@@ -319,6 +319,19 @@ pub struct Quad {
 }
 
 impl Quad {
+    pub fn new(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Self {
+        Self {
+            subject: subject.to_owned(),
+            predicate: predicate.to_owned(),
+            object: object.to_owned(),
+            graph: if let Some(g) = graph {
+                g.to_owned()
+            } else {
+                DefaultGraph::new("").as_term()
+            }
+        }
+    }
+
     pub fn equals(&self, other: &Quad) -> bool {
         self.subject.equals(&other.subject) &&
         self.predicate.equals(&other.predicate) &&
