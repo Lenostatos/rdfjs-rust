@@ -340,6 +340,34 @@ impl Quad {
     }
 }
 
+pub struct DataFactory {}
+
+impl DataFactory {
+    pub fn named_node(value: &str) -> NamedNode {
+        NamedNode::new(value)
+    }
+
+    pub fn blank_node(value: &str) -> BlankNode {
+        BlankNode::new(value)
+    }
+
+    pub fn literal(value: &str, language: Option<&str>, datatype: Option<&NamedNode>) -> Literal {
+        Literal::new(value, language, datatype)
+    }
+
+    pub fn variable(value: &str) -> Variable {
+        Variable::new(value)
+    }
+
+    pub fn default_graph() -> DefaultGraph {
+        DefaultGraph::new("todo")
+    }
+
+    pub fn quad(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Quad {
+        Quad::new(subject, predicate, object, graph)
+    }
+}
+
 fn main() {
     
 }
