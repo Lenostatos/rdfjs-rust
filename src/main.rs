@@ -297,26 +297,29 @@ pub enum TermType {
     Literal(Literal),
     Variable(Variable),
     DefaultGraph(DefaultGraph),
+    Quad(Box<Quad>)
 }
 
 impl TermType {
     pub fn term_type(&self) -> &'static str {
         match self {
-            TermType::BlankNode(t) => t.term_type,
-            TermType::DefaultGraph(t) => t.term_type,
-            TermType::Literal(t) => t.term_type,
-            TermType::NamedNode(t) => t.term_type,
-            TermType::Variable(t) => t.term_type,
+            TermType::NamedNode(nn) => nn.term_type,
+            TermType::BlankNode(bn) => bn.term_type,
+            TermType::Literal(l) => l.term_type,
+            TermType::Variable(v) => v.term_type,
+            TermType::DefaultGraph(dg) => dg.term_type,
+            TermType::Quad(q) => q.term_type,
         }
     }
 
     pub fn value(&self) -> &str {
         match self {
-            TermType::BlankNode(t) => &t.value,
-            TermType::DefaultGraph(t) => &t.value,
-            TermType::Literal(t) => &t.value,
-            TermType::NamedNode(t) => &t.value,
-            TermType::Variable(t) => &t.value,
+            TermType::NamedNode(nn) => &nn.value,
+            TermType::BlankNode(bn) => &bn.value,
+            TermType::Literal(l) => &l.value,
+            TermType::Variable(v) => &v.value,
+            TermType::DefaultGraph(dg) => &dg.value,
+            TermType::Quad(q) => q.value,
         }
     }
 
@@ -360,7 +363,10 @@ impl Term {
     }
 }
 
+#[derive(Clone, PartialEq, Eq)]
 pub struct Quad {
+    pub term_type: &'static str,
+    pub value: &'static str,
     pub subject: Term,
     pub predicate: Term,
     pub object: Term,
@@ -370,6 +376,8 @@ pub struct Quad {
 impl Quad {
     pub fn new(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Self {
         Self {
+            term_type: "Quad",
+            value: "",
             subject: subject.to_owned(),
             predicate: predicate.to_owned(),
             object: object.to_owned(),
@@ -390,6 +398,30 @@ impl Quad {
         self.predicate.equals(Some(&other.predicate)) &&
         self.object.equals(Some(&other.object)) &&
         self.graph.equals(Some(&other.graph))
+    }
+
+    fn as_term_type(self) -> TermType {
+        TermType::Quad(Box::new(self))
+    }
+
+    pub fn as_term(self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.to_string(),
+            term_type_enum: self.as_term_type()
+        }
+    }
+
+    fn to_term_type(&self) -> TermType {
+        TermType::Quad(Box::new(self.clone()))
+    }
+
+    pub fn to_term(&self) -> Term {
+        Term {
+            term_type: self.term_type,
+            value: self.value.to_string(),
+            term_type_enum: self.to_term_type()
+        }
     }
 }
 
