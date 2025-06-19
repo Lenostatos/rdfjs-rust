@@ -12,9 +12,13 @@ impl NamedNode {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let TermType::NamedNode(t) = &other.term_type_enum {
-            self == t
+    pub fn equals(&self, other: Option<&Term>) -> bool {
+        let Some(other) = other else {
+            return false
+        };
+
+        if let TermType::NamedNode(nn) = &other.term_type_enum {
+            self.value == nn.value
         } else {
             false
         }
@@ -59,9 +63,13 @@ impl BlankNode {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let TermType::BlankNode(t) = &other.term_type_enum {
-            self == t
+    pub fn equals(&self, other: Option<&Term>) -> bool {
+        let Some(other) = other else {
+            return false
+        };
+
+        if let TermType::BlankNode(bn) = &other.term_type_enum {
+            self.value == bn.value
         } else {
             false
         }
@@ -118,9 +126,15 @@ impl Literal {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let TermType::Literal(t) = &other.term_type_enum {
-            self == t
+    pub fn equals(&self, other: Option<&Term>) -> bool {
+        let Some(other) = other else {
+            return false
+        };
+
+        if let TermType::Literal(l) = &other.term_type_enum {
+            self.value == l.value &&
+            self.language == l.language &&
+            self.datatype.equals(Some(&l.datatype.to_term()))
         } else {
             false
         }
@@ -165,9 +179,13 @@ impl Variable {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let TermType::Variable(t) = &other.term_type_enum {
-            self == t
+    pub fn equals(&self, other: Option<&Term>) -> bool {
+        let Some(other) = other else {
+            return false
+        };
+
+        if let TermType::Variable(v) = &other.term_type_enum {
+            self.value == v.value
         } else {
             false
         }
@@ -212,9 +230,13 @@ impl DefaultGraph {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
-        if let TermType::DefaultGraph(t) = &other.term_type_enum {
-            self == t
+    pub fn equals(&self, other: Option<&Term>) -> bool {
+        let Some(other) = other else {
+            return false
+        };
+
+        if let TermType::DefaultGraph(_dg) = &other.term_type_enum {
+            true
         } else {
             false
         }
@@ -298,7 +320,11 @@ pub struct Term {
 }
 
 impl Term {
-    pub fn equals(&self, other: &Term) -> bool {
+    pub fn equals(&self, other: Option<&Term>) -> bool {
+        let Some(other) = other else {
+            return false
+        };
+
         self.term_type_enum.equals(&other.term_type_enum)
     }
 
@@ -332,11 +358,15 @@ impl Quad {
         }
     }
 
-    pub fn equals(&self, other: &Quad) -> bool {
-        self.subject.equals(&other.subject) &&
-        self.predicate.equals(&other.predicate) &&
-        self.object.equals(&other.object) &&
-        self.graph.equals(&other.graph)
+    pub fn equals(&self, other: Option<&Quad>) -> bool {
+        let Some(other) = other else {
+            return false
+        };
+
+        self.subject.equals(Some(&other.subject)) &&
+        self.predicate.equals(Some(&other.predicate)) &&
+        self.object.equals(Some(&other.object)) &&
+        self.graph.equals(Some(&other.graph))
     }
 }
 
