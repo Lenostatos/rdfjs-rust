@@ -105,11 +105,17 @@ pub struct Literal {
     pub term_type: &'static str,
     pub value: String,
     pub language: String,
+    pub direction: Option<String>,
     pub datatype: NamedNode
 }
 
 impl Literal {
-    pub fn new(value: &str, language: Option<&str>, datatype: Option<&NamedNode>) -> Self {
+    pub fn new(
+        value: &str, 
+        language: Option<&str>, 
+        direction: Option<&str>, 
+        datatype: Option<&NamedNode>
+    ) -> Self {
         Self {
             term_type: "Literal",
             value: value.to_string(),
@@ -118,7 +124,23 @@ impl Literal {
             } else {
                 "".to_string()
             },
-            datatype: if let Some(d) = datatype {
+            direction: if let Some(d) = direction {
+                if let Some(_l) = language {
+                    if d != "ltr" && d != "rtl" {
+                        panic!("Literal language string direction should always be either 'ltr' or 'rtl'.");
+                    }
+                }
+                Some(d.to_string())
+            } else {
+                Some("".to_string())
+            },
+            datatype: if let Some(_l) = language {
+                if let Some(_d) = direction {
+                    NamedNode::new("http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString")
+                } else {
+                    NamedNode::new("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")
+                }
+            } else if let Some(d) = datatype {
                 d.clone()
             } else {
                 NamedNode::new("http://www.w3.org/2001/XMLSchema#string")
@@ -134,6 +156,7 @@ impl Literal {
         if let TermType::Literal(l) = &other.term_type_enum {
             self.value == l.value &&
             self.language == l.language &&
+            self.direction == l.direction &&
             self.datatype.equals(Some(&l.datatype.to_term()))
         } else {
             false
@@ -381,8 +404,8 @@ impl DataFactory {
         BlankNode::new(value)
     }
 
-    pub fn literal(value: &str, language: Option<&str>, datatype: Option<&NamedNode>) -> Literal {
-        Literal::new(value, language, datatype)
+    pub fn literal(value: &str, language: Option<&str>, direction: Option<&str>, datatype: Option<&NamedNode>) -> Literal {
+        Literal::new(value, language, direction, datatype)
     }
 
     pub fn variable(value: &str) -> Variable {
