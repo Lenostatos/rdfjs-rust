@@ -201,14 +201,14 @@ impl Variable {
 #[derive(Clone, PartialEq, Eq)]
 pub struct DefaultGraph {
     pub term_type: &'static str,
-    pub value: String
+    pub value: &'static str
 }
 
 impl DefaultGraph {
-    pub fn new(value: &str) -> Self {
+    pub fn new() -> Self {
         Self {
             term_type: "DefaultGraph",
-            value: value.to_string()
+            value: ""
         }
     }
 
@@ -227,7 +227,7 @@ impl DefaultGraph {
     pub fn as_term(self) -> Term {
         Term {
             term_type: self.term_type,
-            value: self.value.clone(),
+            value: self.value.to_string(),
             term_type_enum: self.as_term_type()
         }
     }
@@ -239,7 +239,7 @@ impl DefaultGraph {
     pub fn to_term(&self) -> Term {
         Term {
             term_type: self.term_type,
-            value: self.value.clone(),
+            value: self.value.to_string(),
             term_type_enum: self.to_term_type()
         }
     }
@@ -327,7 +327,7 @@ impl Quad {
             graph: if let Some(g) = graph {
                 g.to_owned()
             } else {
-                DefaultGraph::new("").as_term()
+                DefaultGraph::new().as_term()
             }
         }
     }
@@ -360,7 +360,7 @@ impl DataFactory {
     }
 
     pub fn default_graph() -> DefaultGraph {
-        DefaultGraph::new("todo")
+        DefaultGraph::new()
     }
 
     pub fn quad(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Quad {
