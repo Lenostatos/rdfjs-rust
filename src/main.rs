@@ -360,8 +360,72 @@ pub struct Quad {
     pub graph: Term,
 }
 
+fn validate_quad_subject_type(term: &Term) {
+    let valid_type = match term.term_type_enum {
+        TermType::NamedNode(_)
+        | TermType::BlankNode(_)
+        | TermType::Variable(_)
+        | TermType::Quad(_) => true,
+        _ => false,
+    };
+
+    if !valid_type {
+        panic!("A quad subject should be either a NamedNode, a BlankNode, a Variable, or a Quad.");
+    };
+}
+
+fn validate_quad_predicate_type(term: &Term) {
+    let valid_type = match term.term_type_enum {
+        TermType::NamedNode(_) | TermType::Variable(_) => true,
+        _ => false,
+    };
+
+    if !valid_type {
+        panic!("A quad predicate should be either a NamedNode or a Variable.");
+    };
+}
+
+fn validate_quad_object_type(term: &Term) {
+    let valid_type = match term.term_type_enum {
+        TermType::NamedNode(_)
+        | TermType::Literal(_)
+        | TermType::BlankNode(_)
+        | TermType::Variable(_) => true,
+        _ => false,
+    };
+
+    if !valid_type {
+        panic!(
+            "A quad object should be either a NamedNode, a Literal, a BlankNode, or a Variable."
+        );
+    };
+}
+
+fn validate_quad_graph_type(term: &Term) {
+    let valid_type = match term.term_type_enum {
+        TermType::DefaultGraph(_)
+        | TermType::NamedNode(_)
+        | TermType::BlankNode(_)
+        | TermType::Variable(_) => true,
+        _ => false,
+    };
+
+    if !valid_type {
+        panic!(
+            "A quad graph should be either the DefaultGraph, a NamedNode, a BlankNode, or a Variable."
+        );
+    };
+}
+
 impl Quad {
     pub fn new(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Self {
+        validate_quad_subject_type(subject);
+        validate_quad_predicate_type(predicate);
+        validate_quad_object_type(object);
+        if let Some(graph) = graph {
+            validate_quad_graph_type(graph);
+        };
+
         Self {
             term_type: "Quad",
             value: "",
