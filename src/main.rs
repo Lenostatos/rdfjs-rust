@@ -425,15 +425,26 @@ impl Quad {
     }
 }
 
-pub struct DataFactory {}
+pub struct DataFactory {
+    blank_node_value_counter: usize,
+}
 
 impl DataFactory {
+    pub fn new() -> Self {
+        Self { blank_node_value_counter: 0 }
+    }
+
     pub fn named_node(value: &str) -> NamedNode {
         NamedNode::new(value)
     }
 
-    pub fn blank_node(value: &str) -> BlankNode {
-        BlankNode::new(value)
+    pub fn blank_node(&mut self, value: Option<&str>) -> BlankNode {
+        if let Some(value) = value {
+            BlankNode::new(value)
+        } else {
+            self.blank_node_value_counter += 1;
+            BlankNode::new(self.blank_node_value_counter.to_string().as_str())
+        }
     }
 
     pub fn literal(value: &str, language: Option<&str>, direction: Option<&str>, datatype: Option<&NamedNode>) -> Literal {
