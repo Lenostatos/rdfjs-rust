@@ -13,9 +13,7 @@ impl NamedNode {
     }
 
     pub fn equals(&self, other: Option<&Term>) -> bool {
-        let Some(other) = other else {
-            return false
-        };
+        let Some(other) = other else { return false };
 
         if let TermType::NamedNode(nn) = &other.term_type_enum {
             self.value == nn.value
@@ -32,7 +30,7 @@ impl NamedNode {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.as_term_type()
+            term_type_enum: self.as_term_type(),
         }
     }
 
@@ -44,7 +42,7 @@ impl NamedNode {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.to_term_type()
+            term_type_enum: self.to_term_type(),
         }
     }
 }
@@ -52,21 +50,19 @@ impl NamedNode {
 #[derive(Clone, PartialEq, Eq)]
 pub struct BlankNode {
     pub term_type: &'static str,
-    pub value: String
+    pub value: String,
 }
 
 impl BlankNode {
     pub fn new(value: &str) -> Self {
         Self {
             term_type: "BlankNode",
-            value: value.to_string()
+            value: value.to_string(),
         }
     }
 
     pub fn equals(&self, other: Option<&Term>) -> bool {
-        let Some(other) = other else {
-            return false
-        };
+        let Some(other) = other else { return false };
 
         if let TermType::BlankNode(bn) = &other.term_type_enum {
             self.value == bn.value
@@ -83,7 +79,7 @@ impl BlankNode {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.as_term_type()
+            term_type_enum: self.as_term_type(),
         }
     }
 
@@ -95,7 +91,7 @@ impl BlankNode {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.to_term_type()
+            term_type_enum: self.to_term_type(),
         }
     }
 }
@@ -106,15 +102,15 @@ pub struct Literal {
     pub value: String,
     pub language: String,
     pub direction: Option<String>,
-    pub datatype: NamedNode
+    pub datatype: NamedNode,
 }
 
 impl Literal {
     pub fn new(
-        value: &str, 
-        language: Option<&str>, 
-        direction: Option<&str>, 
-        datatype: Option<&NamedNode>
+        value: &str,
+        language: Option<&str>,
+        direction: Option<&str>,
+        datatype: Option<&NamedNode>,
     ) -> Self {
         Self {
             term_type: "Literal",
@@ -127,7 +123,9 @@ impl Literal {
             direction: if let Some(d) = direction {
                 if let Some(_l) = language {
                     if d != "ltr" && d != "rtl" {
-                        panic!("Literal language string direction should always be either 'ltr' or 'rtl'.");
+                        panic!(
+                            "Literal language string direction should always be either 'ltr' or 'rtl'."
+                        );
                     }
                 }
                 Some(d.to_string())
@@ -144,20 +142,18 @@ impl Literal {
                 d.clone()
             } else {
                 NamedNode::new("http://www.w3.org/2001/XMLSchema#string")
-            }
+            },
         }
     }
 
     pub fn equals(&self, other: Option<&Term>) -> bool {
-        let Some(other) = other else {
-            return false
-        };
+        let Some(other) = other else { return false };
 
         if let TermType::Literal(l) = &other.term_type_enum {
-            self.value == l.value &&
-            self.language == l.language &&
-            self.direction == l.direction &&
-            self.datatype.equals(Some(&l.datatype.to_term()))
+            self.value == l.value
+                && self.language == l.language
+                && self.direction == l.direction
+                && self.datatype.equals(Some(&l.datatype.to_term()))
         } else {
             false
         }
@@ -171,7 +167,7 @@ impl Literal {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.as_term_type()
+            term_type_enum: self.as_term_type(),
         }
     }
 
@@ -183,7 +179,7 @@ impl Literal {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.to_term_type()
+            term_type_enum: self.to_term_type(),
         }
     }
 }
@@ -191,21 +187,19 @@ impl Literal {
 #[derive(Clone, PartialEq, Eq)]
 pub struct Variable {
     pub term_type: &'static str,
-    pub value: String
+    pub value: String,
 }
 
 impl Variable {
     pub fn new(value: &str) -> Self {
         Self {
             term_type: "Variable",
-            value: value.to_string()
+            value: value.to_string(),
         }
     }
 
     pub fn equals(&self, other: Option<&Term>) -> bool {
-        let Some(other) = other else {
-            return false
-        };
+        let Some(other) = other else { return false };
 
         if let TermType::Variable(v) = &other.term_type_enum {
             self.value == v.value
@@ -222,7 +216,7 @@ impl Variable {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.as_term_type()
+            term_type_enum: self.as_term_type(),
         }
     }
 
@@ -234,7 +228,7 @@ impl Variable {
         Term {
             term_type: self.term_type,
             value: self.value.clone(),
-            term_type_enum: self.to_term_type()
+            term_type_enum: self.to_term_type(),
         }
     }
 }
@@ -242,21 +236,19 @@ impl Variable {
 #[derive(Clone, PartialEq, Eq)]
 pub struct DefaultGraph {
     pub term_type: &'static str,
-    pub value: &'static str
+    pub value: &'static str,
 }
 
 impl DefaultGraph {
     pub fn new() -> Self {
         Self {
             term_type: "DefaultGraph",
-            value: ""
+            value: "",
         }
     }
 
     pub fn equals(&self, other: Option<&Term>) -> bool {
-        let Some(other) = other else {
-            return false
-        };
+        let Some(other) = other else { return false };
 
         if let TermType::DefaultGraph(_dg) = &other.term_type_enum {
             true
@@ -273,7 +265,7 @@ impl DefaultGraph {
         Term {
             term_type: self.term_type,
             value: self.value.to_string(),
-            term_type_enum: self.as_term_type()
+            term_type_enum: self.as_term_type(),
         }
     }
 
@@ -285,7 +277,7 @@ impl DefaultGraph {
         Term {
             term_type: self.term_type,
             value: self.value.to_string(),
-            term_type_enum: self.to_term_type()
+            term_type_enum: self.to_term_type(),
         }
     }
 }
@@ -297,7 +289,7 @@ pub enum TermType {
     Literal(Literal),
     Variable(Variable),
     DefaultGraph(DefaultGraph),
-    Quad(Box<Quad>)
+    Quad(Box<Quad>),
 }
 
 impl TermType {
@@ -326,13 +318,10 @@ impl TermType {
     pub fn equals(&self, other: &Self) -> bool {
         match self {
             TermType::Literal(t) => match other {
-                TermType::Literal(o) => {
-                    t == o
-                },
-                _ => false
+                TermType::Literal(o) => t == o,
+                _ => false,
             },
-            _ => self.term_type() == other.term_type() &&
-                self.value() == other.value()
+            _ => self.term_type() == other.term_type() && self.value() == other.value(),
         }
     }
 }
@@ -342,14 +331,12 @@ pub struct Term {
     pub term_type: &'static str,
     pub value: String,
 
-    term_type_enum: TermType
+    term_type_enum: TermType,
 }
 
 impl Term {
     pub fn equals(&self, other: Option<&Term>) -> bool {
-        let Some(other) = other else {
-            return false
-        };
+        let Some(other) = other else { return false };
 
         self.term_type_enum.equals(&other.term_type_enum)
     }
@@ -370,7 +357,7 @@ pub struct Quad {
     pub subject: Term,
     pub predicate: Term,
     pub object: Term,
-    pub graph: Term
+    pub graph: Term,
 }
 
 impl Quad {
@@ -385,19 +372,17 @@ impl Quad {
                 g.to_owned()
             } else {
                 DefaultGraph::new().as_term()
-            }
+            },
         }
     }
 
     pub fn equals(&self, other: Option<&Quad>) -> bool {
-        let Some(other) = other else {
-            return false
-        };
+        let Some(other) = other else { return false };
 
-        self.subject.equals(Some(&other.subject)) &&
-        self.predicate.equals(Some(&other.predicate)) &&
-        self.object.equals(Some(&other.object)) &&
-        self.graph.equals(Some(&other.graph))
+        self.subject.equals(Some(&other.subject))
+            && self.predicate.equals(Some(&other.predicate))
+            && self.object.equals(Some(&other.object))
+            && self.graph.equals(Some(&other.graph))
     }
 
     fn as_term_type(self) -> TermType {
@@ -408,7 +393,7 @@ impl Quad {
         Term {
             term_type: self.term_type,
             value: self.value.to_string(),
-            term_type_enum: self.as_term_type()
+            term_type_enum: self.as_term_type(),
         }
     }
 
@@ -420,7 +405,7 @@ impl Quad {
         Term {
             term_type: self.term_type,
             value: self.value.to_string(),
-            term_type_enum: self.to_term_type()
+            term_type_enum: self.to_term_type(),
         }
     }
 }
@@ -431,7 +416,9 @@ pub struct DataFactory {
 
 impl DataFactory {
     pub fn new() -> Self {
-        Self { blank_node_value_counter: 0 }
+        Self {
+            blank_node_value_counter: 0,
+        }
     }
 
     pub fn named_node(value: &str) -> NamedNode {
@@ -447,7 +434,12 @@ impl DataFactory {
         }
     }
 
-    pub fn literal(value: &str, language: Option<&str>, direction: Option<&str>, datatype: Option<&NamedNode>) -> Literal {
+    pub fn literal(
+        value: &str,
+        language: Option<&str>,
+        direction: Option<&str>,
+        datatype: Option<&NamedNode>,
+    ) -> Literal {
         Literal::new(value, language, direction, datatype)
     }
 
@@ -464,6 +456,4 @@ impl DataFactory {
     }
 }
 
-fn main() {
-    
-}
+fn main() {}
