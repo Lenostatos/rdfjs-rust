@@ -5,7 +5,7 @@ pub struct NamedNode {
 }
 
 impl NamedNode {
-    pub fn new(value: &str) -> Self {
+    fn new(value: &str) -> Self {
         Self {
             term_type: "NamedNode",
             value: value.to_string(),
@@ -54,7 +54,7 @@ pub struct BlankNode {
 }
 
 impl BlankNode {
-    pub fn new(value: &str) -> Self {
+    fn new(value: &str) -> Self {
         Self {
             term_type: "BlankNode",
             value: value.to_string(),
@@ -106,7 +106,7 @@ pub struct Literal {
 }
 
 impl Literal {
-    pub fn new(
+    fn new(
         value: &str,
         language: Option<&str>,
         direction: Option<&str>,
@@ -191,7 +191,7 @@ pub struct Variable {
 }
 
 impl Variable {
-    pub fn new(value: &str) -> Self {
+    fn new(value: &str) -> Self {
         Self {
             term_type: "Variable",
             value: value.to_string(),
@@ -240,7 +240,7 @@ pub struct DefaultGraph {
 }
 
 impl DefaultGraph {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {
             term_type: "DefaultGraph",
             value: "",
@@ -418,7 +418,7 @@ fn validate_quad_graph_type(term: &Term) {
 }
 
 impl Quad {
-    pub fn new(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Self {
+    fn new(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Self {
         validate_quad_subject_type(subject);
         validate_quad_predicate_type(predicate);
         validate_quad_object_type(object);
