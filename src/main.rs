@@ -529,6 +529,14 @@ impl DataFactory {
     pub fn quad(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Quad {
         Quad::new(subject, predicate, object, graph)
     }
+
+    pub fn from_term(original: &Term) -> Term {
+        original.clone()
+    }
+
+    pub fn from_quad(original: &Quad) -> Quad {
+        original.clone()
+    }
 }
 
 pub enum LanguageOrDatatype {
