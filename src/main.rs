@@ -498,13 +498,24 @@ impl DataFactory {
         }
     }
 
-    pub fn literal(
-        value: &str,
-        language: Option<&str>,
-        direction: Option<&str>,
-        datatype: Option<&NamedNode>,
-    ) -> Literal {
-        Literal::new(value, language, direction, datatype)
+    pub fn literal(value: &str, language_or_datatype: Option<&LanguageOrDatatype>) -> Literal {
+        match language_or_datatype {
+            Some(language_or_datatype) => match language_or_datatype {
+                LanguageOrDatatype::Language(language) => {
+                    Literal::new(value, Some(language), None, None)
+                }
+                LanguageOrDatatype::Datatype(datatype) => {
+                    Literal::new(value, None, None, Some(datatype))
+                }
+                LanguageOrDatatype::DirectionalLanguage(directional_language) => Literal::new(
+                    value,
+                    Some(&directional_language.language),
+                    directional_language.direction.as_deref(),
+                    None,
+                ),
+            },
+            None => Literal::new(value, None, None, None),
+        }
     }
 
     pub fn variable(value: &str) -> Variable {
@@ -518,6 +529,17 @@ impl DataFactory {
     pub fn quad(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Quad {
         Quad::new(subject, predicate, object, graph)
     }
+}
+
+pub enum LanguageOrDatatype {
+    Language(String),
+    Datatype(NamedNode),
+    DirectionalLanguage(DirectionalLanguage),
+}
+
+pub struct DirectionalLanguage {
+    language: String,
+    direction: Option<String>,
 }
 
 fn main() {}
