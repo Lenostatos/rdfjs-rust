@@ -1,15 +1,31 @@
-use rdfjs_rust::DataFactory;
+use rdfjs_rust::js;
+use rdfjs_rust::rs;
+use rdfjs_rust::rs::TermLike;
 
 fn main() {
-    let mut factory = DataFactory::new();
+    // JS
+    let mut factory = js::DataFactory::new();
 
-    let nn = DataFactory::named_node("nn");
-    let bn = factory.blank_node(None);
-    let l = DataFactory::literal("l", None);
-    let v = DataFactory::variable("v");
-    let dg = DataFactory::default_graph();
+    let nn = js::DataFactory::named_node("nn");
+    let _bn = factory.blank_node(None);
+    let l = js::DataFactory::literal("l", None);
+    let _v = js::DataFactory::variable("v");
+    let _dg = js::DataFactory::default_graph();
 
-    let q = DataFactory::quad(&nn.to_term(), &nn.to_term(), &l.to_term(), None);
+    let q = js::DataFactory::quad(&nn.to_term(), &nn.to_term(), &l.to_term(), None);
+
+    print!("{:#?}", q);
+
+    // RS
+    let mut factory = rs::DataFactory::new();
+
+    let nn = rs::DataFactory::named_node("nn");
+    let _bn = factory.blank_node(None);
+    let l = rs::DataFactory::literal("l", None);
+    let _v = rs::DataFactory::variable("v");
+    let _dg = rs::DataFactory::default_graph();
+
+    let q = rs::DataFactory::quad(&nn.to_term(), &nn.to_term(), &l.to_term(), None);
 
     print!("{:#?}", q);
 }
