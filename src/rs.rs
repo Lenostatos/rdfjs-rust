@@ -1,12 +1,11 @@
 pub trait TermLike {
     fn value(&self) -> &str;
-    fn equals(&self, other: &Term) -> bool;
 
     fn as_term(self) -> Term;
     fn to_term(&self) -> Term;
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Eq, Debug)]
 pub struct NamedNode {
     value: String,
 }
@@ -17,22 +16,47 @@ impl NamedNode {
             value: value.to_owned(),
         }
     }
+}
 
-    fn equals_named_node(&self, other: &Self) -> bool {
+impl PartialEq for NamedNode {
+    fn eq(&self, other: &Self) -> bool {
         self.value() == other.value()
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for NamedNode {
+    fn eq(&self, other: &Term) -> bool {
+        match other {
+            Term::NamedNode(nn) => self == nn,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<NamedNode> for Term {
+    fn eq(&self, other: &NamedNode) -> bool {
+        match self {
+            Term::NamedNode(nn) => other == nn,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &NamedNode) -> bool {
+        !self.eq(other)
     }
 }
 
 impl TermLike for NamedNode {
     fn value(&self) -> &str {
         &self.value
-    }
-
-    fn equals(&self, other: &Term) -> bool {
-        match other {
-            Term::NamedNode(nn) => self.equals_named_node(nn),
-            _ => false,
-        }
     }
 
     fn as_term(self) -> Term {
@@ -44,7 +68,7 @@ impl TermLike for NamedNode {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Eq, Debug)]
 pub struct BlankNode {
     value: String,
 }
@@ -57,16 +81,45 @@ impl BlankNode {
     }
 }
 
+impl PartialEq for BlankNode {
+    fn eq(&self, other: &Self) -> bool {
+        self.value() == other.value()
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for BlankNode {
+    fn eq(&self, other: &Term) -> bool {
+        match other {
+            Term::BlankNode(bn) => self == bn,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<BlankNode> for Term {
+    fn eq(&self, other: &BlankNode) -> bool {
+        match self {
+            Term::BlankNode(bn) => other == bn,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &BlankNode) -> bool {
+        !self.eq(other)
+    }
+}
+
 impl TermLike for BlankNode {
     fn value(&self) -> &str {
         &self.value
-    }
-
-    fn equals(&self, other: &Term) -> bool {
-        match other {
-            Term::BlankNode(bn) => self.value() == bn.value(),
-            _ => false,
-        }
     }
 
     fn as_term(self) -> Term {
@@ -78,7 +131,7 @@ impl TermLike for BlankNode {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Eq, Debug)]
 pub struct Literal {
     value: String,
     pub language: String,
@@ -134,21 +187,48 @@ impl Literal {
     }
 }
 
+impl PartialEq for Literal {
+    fn eq(&self, other: &Self) -> bool {
+        self.value() == other.value()
+            && self.language == other.language
+            && self.direction == other.direction
+            && self.datatype == other.datatype
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for Literal {
+    fn eq(&self, other: &Term) -> bool {
+        match other {
+            Term::Literal(l) => self == l,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Literal> for Term {
+    fn eq(&self, other: &Literal) -> bool {
+        match self {
+            Term::Literal(l) => other == l,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Literal) -> bool {
+        !self.eq(other)
+    }
+}
+
 impl TermLike for Literal {
     fn value(&self) -> &str {
         &self.value
-    }
-
-    fn equals(&self, other: &Term) -> bool {
-        match other {
-            Term::Literal(l) => {
-                self.value() == l.value()
-                    && self.language == l.language
-                    && self.direction == l.direction
-                    && self.datatype.equals_named_node(&l.datatype)
-            }
-            _ => false,
-        }
     }
 
     fn as_term(self) -> Term {
@@ -160,7 +240,7 @@ impl TermLike for Literal {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Eq, Debug)]
 pub struct Variable {
     value: String,
 }
@@ -173,16 +253,45 @@ impl Variable {
     }
 }
 
+impl PartialEq for Variable {
+    fn eq(&self, other: &Self) -> bool {
+        self.value() == other.value()
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for Variable {
+    fn eq(&self, other: &Term) -> bool {
+        match other {
+            Term::Variable(v) => self == v,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Variable> for Term {
+    fn eq(&self, other: &Variable) -> bool {
+        match self {
+            Term::Variable(v) => other == v,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Variable) -> bool {
+        !self.eq(other)
+    }
+}
+
 impl TermLike for Variable {
     fn value(&self) -> &str {
         &self.value
-    }
-
-    fn equals(&self, other: &Term) -> bool {
-        match other {
-            Term::Variable(v) => self.value() == v.value(),
-            _ => false,
-        }
     }
 
     fn as_term(self) -> Term {
@@ -194,7 +303,7 @@ impl TermLike for Variable {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Eq, Debug)]
 pub struct DefaultGraph {}
 
 impl DefaultGraph {
@@ -203,16 +312,45 @@ impl DefaultGraph {
     }
 }
 
+impl PartialEq for DefaultGraph {
+    fn eq(&self, _other: &Self) -> bool {
+        true
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for DefaultGraph {
+    fn eq(&self, other: &Term) -> bool {
+        match other {
+            Term::DefaultGraph(dg) => self == dg,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<DefaultGraph> for Term {
+    fn eq(&self, other: &DefaultGraph) -> bool {
+        match self {
+            Term::DefaultGraph(dg) => other == dg,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &DefaultGraph) -> bool {
+        !self.eq(other)
+    }
+}
+
 impl TermLike for DefaultGraph {
     fn value(&self) -> &str {
         ""
-    }
-
-    fn equals(&self, other: &Term) -> bool {
-        match other {
-            Term::DefaultGraph(_) => true,
-            _ => false,
-        }
     }
 
     fn as_term(self) -> Term {
@@ -224,65 +362,377 @@ impl TermLike for DefaultGraph {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Eq, Debug)]
+pub enum QuadSubject {
+    NamedNode(NamedNode),
+    BlankNode(BlankNode),
+    Variable(Variable),
+    Quad(Box<Quad>),
+}
+
+impl PartialEq for QuadSubject {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Self::NamedNode(self_nn) => match other {
+                Self::NamedNode(other_nn) => self_nn == other_nn,
+                _ => false,
+            },
+            Self::BlankNode(self_bn) => match other {
+                Self::BlankNode(other_bn) => self_bn == other_bn,
+                _ => false,
+            },
+            Self::Variable(self_v) => match other {
+                Self::Variable(other_v) => self_v == other_v,
+                _ => false,
+            },
+            Self::Quad(self_q) => match other {
+                Self::Quad(other_q) => self_q == other_q,
+                _ => false,
+            },
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for QuadSubject {
+    fn eq(&self, other: &Term) -> bool {
+        match self {
+            QuadSubject::NamedNode(named_node) => named_node == other,
+            QuadSubject::BlankNode(blank_node) => blank_node == other,
+            QuadSubject::Variable(variable) => variable == other,
+            QuadSubject::Quad(quad) => **quad == *other,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<QuadSubject> for Term {
+    fn eq(&self, other: &QuadSubject) -> bool {
+        match other {
+            QuadSubject::NamedNode(named_node) => named_node == self,
+            QuadSubject::BlankNode(blank_node) => blank_node == self,
+            QuadSubject::Variable(variable) => variable == self,
+            QuadSubject::Quad(quad) => **quad == *self,
+        }
+    }
+
+    fn ne(&self, other: &QuadSubject) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl TermLike for QuadSubject {
+    fn value(&self) -> &str {
+        match self {
+            QuadSubject::NamedNode(named_node) => named_node.value(),
+            QuadSubject::BlankNode(blank_node) => blank_node.value(),
+            QuadSubject::Variable(variable) => variable.value(),
+            QuadSubject::Quad(quad) => quad.value(),
+        }
+    }
+
+    fn as_term(self) -> Term {
+        match self {
+            QuadSubject::NamedNode(named_node) => named_node.as_term(),
+            QuadSubject::BlankNode(blank_node) => blank_node.as_term(),
+            QuadSubject::Variable(variable) => variable.as_term(),
+            QuadSubject::Quad(quad) => quad.as_term(),
+        }
+    }
+
+    fn to_term(&self) -> Term {
+        match self {
+            QuadSubject::NamedNode(named_node) => named_node.to_term(),
+            QuadSubject::BlankNode(blank_node) => blank_node.to_term(),
+            QuadSubject::Variable(variable) => variable.to_term(),
+            QuadSubject::Quad(quad) => quad.to_term(),
+        }
+    }
+}
+
+#[derive(Clone, Eq, Debug)]
+pub enum QuadPredicate {
+    NamedNode(NamedNode),
+    Variable(Variable),
+}
+
+impl PartialEq for QuadPredicate {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Self::NamedNode(self_nn) => match other {
+                Self::NamedNode(other_nn) => self_nn == other_nn,
+                _ => false,
+            },
+            Self::Variable(self_v) => match other {
+                Self::Variable(other_v) => self_v == other_v,
+                _ => false,
+            },
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for QuadPredicate {
+    fn eq(&self, other: &Term) -> bool {
+        match self {
+            QuadPredicate::NamedNode(named_node) => named_node == other,
+            QuadPredicate::Variable(variable) => variable == other,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<QuadPredicate> for Term {
+    fn eq(&self, other: &QuadPredicate) -> bool {
+        match other {
+            QuadPredicate::NamedNode(named_node) => named_node == self,
+            QuadPredicate::Variable(variable) => variable == self,
+        }
+    }
+
+    fn ne(&self, other: &QuadPredicate) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl TermLike for QuadPredicate {
+    fn value(&self) -> &str {
+        match self {
+            QuadPredicate::NamedNode(named_node) => named_node.value(),
+            QuadPredicate::Variable(variable) => variable.value(),
+        }
+    }
+
+    fn as_term(self) -> Term {
+        match self {
+            QuadPredicate::NamedNode(named_node) => named_node.as_term(),
+            QuadPredicate::Variable(variable) => variable.as_term(),
+        }
+    }
+
+    fn to_term(&self) -> Term {
+        match self {
+            QuadPredicate::NamedNode(named_node) => named_node.to_term(),
+            QuadPredicate::Variable(variable) => variable.to_term(),
+        }
+    }
+}
+
+#[derive(Clone, Eq, Debug)]
+pub enum QuadObject {
+    NamedNode(NamedNode),
+    Literal(Literal),
+    BlankNode(BlankNode),
+    Variable(Variable),
+}
+
+impl PartialEq for QuadObject {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Self::NamedNode(self_nn) => match other {
+                Self::NamedNode(other_nn) => self_nn == other_nn,
+                _ => false,
+            },
+            Self::BlankNode(self_bn) => match other {
+                Self::BlankNode(other_bn) => self_bn == other_bn,
+                _ => false,
+            },
+            Self::Variable(self_v) => match other {
+                Self::Variable(other_v) => self_v == other_v,
+                _ => false,
+            },
+            Self::Literal(self_q) => match other {
+                Self::Literal(other_q) => self_q == other_q,
+                _ => false,
+            },
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for QuadObject {
+    fn eq(&self, other: &Term) -> bool {
+        match self {
+            QuadObject::NamedNode(named_node) => named_node == other,
+            QuadObject::Literal(literal) => literal == other,
+            QuadObject::BlankNode(blank_node) => blank_node == other,
+            QuadObject::Variable(variable) => variable == other,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<QuadObject> for Term {
+    fn eq(&self, other: &QuadObject) -> bool {
+        match other {
+            QuadObject::NamedNode(named_node) => named_node == self,
+            QuadObject::Literal(literal) => literal == self,
+            QuadObject::BlankNode(blank_node) => blank_node == self,
+            QuadObject::Variable(variable) => variable == self,
+        }
+    }
+
+    fn ne(&self, other: &QuadObject) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl TermLike for QuadObject {
+    fn value(&self) -> &str {
+        match self {
+            QuadObject::NamedNode(named_node) => named_node.value(),
+            QuadObject::Literal(literal) => literal.value(),
+            QuadObject::BlankNode(blank_node) => blank_node.value(),
+            QuadObject::Variable(variable) => variable.value(),
+        }
+    }
+
+    fn as_term(self) -> Term {
+        match self {
+            QuadObject::NamedNode(named_node) => named_node.as_term(),
+            QuadObject::Literal(literal) => literal.as_term(),
+            QuadObject::BlankNode(blank_node) => blank_node.as_term(),
+            QuadObject::Variable(variable) => variable.as_term(),
+        }
+    }
+
+    fn to_term(&self) -> Term {
+        match self {
+            QuadObject::NamedNode(named_node) => named_node.to_term(),
+            QuadObject::Literal(literal) => literal.to_term(),
+            QuadObject::BlankNode(blank_node) => blank_node.to_term(),
+            QuadObject::Variable(variable) => variable.to_term(),
+        }
+    }
+}
+
+#[derive(Clone, Eq, Debug)]
+pub enum QuadGraph {
+    DefaultGraph(DefaultGraph),
+    NamedNode(NamedNode),
+    BlankNode(BlankNode),
+    Variable(Variable),
+}
+
+impl PartialEq for QuadGraph {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Self::NamedNode(self_nn) => match other {
+                Self::NamedNode(other_nn) => self_nn == other_nn,
+                _ => false,
+            },
+            Self::BlankNode(self_bn) => match other {
+                Self::BlankNode(other_bn) => self_bn == other_bn,
+                _ => false,
+            },
+            Self::Variable(self_v) => match other {
+                Self::Variable(other_v) => self_v == other_v,
+                _ => false,
+            },
+            Self::DefaultGraph(self_q) => match other {
+                Self::DefaultGraph(other_q) => self_q == other_q,
+                _ => false,
+            },
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for QuadGraph {
+    fn eq(&self, other: &Term) -> bool {
+        match self {
+            QuadGraph::NamedNode(named_node) => named_node == other,
+            QuadGraph::BlankNode(blank_node) => blank_node == other,
+            QuadGraph::Variable(variable) => variable == other,
+            QuadGraph::DefaultGraph(default_graph) => default_graph == other,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<QuadGraph> for Term {
+    fn eq(&self, other: &QuadGraph) -> bool {
+        match other {
+            QuadGraph::NamedNode(named_node) => named_node == self,
+            QuadGraph::BlankNode(blank_node) => blank_node == self,
+            QuadGraph::Variable(variable) => variable == self,
+            QuadGraph::DefaultGraph(default_graph) => default_graph == self,
+        }
+    }
+
+    fn ne(&self, other: &QuadGraph) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl TermLike for QuadGraph {
+    fn value(&self) -> &str {
+        match self {
+            QuadGraph::NamedNode(named_node) => named_node.value(),
+            QuadGraph::BlankNode(blank_node) => blank_node.value(),
+            QuadGraph::Variable(variable) => variable.value(),
+            QuadGraph::DefaultGraph(default_graph) => default_graph.value(),
+        }
+    }
+
+    fn as_term(self) -> Term {
+        match self {
+            QuadGraph::NamedNode(named_node) => named_node.as_term(),
+            QuadGraph::BlankNode(blank_node) => blank_node.as_term(),
+            QuadGraph::Variable(variable) => variable.as_term(),
+            QuadGraph::DefaultGraph(default_graph) => default_graph.as_term(),
+        }
+    }
+
+    fn to_term(&self) -> Term {
+        match self {
+            QuadGraph::NamedNode(named_node) => named_node.to_term(),
+            QuadGraph::BlankNode(blank_node) => blank_node.to_term(),
+            QuadGraph::Variable(variable) => variable.to_term(),
+            QuadGraph::DefaultGraph(default_graph) => default_graph.to_term(),
+        }
+    }
+}
+
+#[derive(Clone, Eq, Debug)]
 pub struct Quad {
-    pub subject: Term,
-    pub predicate: Term,
-    pub object: Term,
-    pub graph: Term,
-}
-
-fn validate_quad_subject_type(term: &Term) {
-    match term {
-        Term::NamedNode(_) | Term::BlankNode(_) | Term::Variable(_) | Term::Quad(_) => (),
-        _ => {
-            panic!(
-                "A quad subject should be either a NamedNode, a BlankNode, a Variable, or a Quad."
-            );
-        }
-    };
-}
-
-fn validate_quad_predicate_type(term: &Term) {
-    match term {
-        Term::NamedNode(_) | Term::Variable(_) => (),
-        _ => {
-            panic!("A quad predicate should be either a NamedNode or a Variable.");
-        }
-    };
-}
-
-fn validate_quad_object_type(term: &Term) {
-    match term {
-        Term::NamedNode(_) | Term::Literal(_) | Term::BlankNode(_) | Term::Variable(_) => (),
-        _ => {
-            panic!(
-                "A quad object should be either a NamedNode, a Literal, a BlankNode, or a Variable."
-            );
-        }
-    };
-}
-
-fn validate_quad_graph_type(term: &Term) {
-    match term {
-        Term::DefaultGraph(_) | Term::NamedNode(_) | Term::BlankNode(_) | Term::Variable(_) => (),
-        _ => {
-            panic!(
-                "A quad graph should be either the DefaultGraph, a NamedNode, a BlankNode, or a Variable."
-            );
-        }
-    };
+    pub subject: QuadSubject,
+    pub predicate: QuadPredicate,
+    pub object: QuadObject,
+    pub graph: QuadGraph,
 }
 
 impl Quad {
-    pub fn new(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Self {
-        validate_quad_subject_type(subject);
-        validate_quad_predicate_type(predicate);
-        validate_quad_object_type(object);
-        if let Some(graph) = graph {
-            validate_quad_graph_type(graph);
-        };
-
+    pub fn new(
+        subject: &QuadSubject,
+        predicate: &QuadPredicate,
+        object: &QuadObject,
+        graph: Option<&QuadGraph>,
+    ) -> Self {
         Self {
             subject: subject.to_owned(),
             predicate: predicate.to_owned(),
@@ -290,27 +740,54 @@ impl Quad {
             graph: if let Some(g) = graph {
                 g.to_owned()
             } else {
-                DefaultGraph::new().as_term()
+                QuadGraph::DefaultGraph(DefaultGraph::new())
             },
         }
+    }
+}
+
+impl PartialEq for Quad {
+    fn eq(&self, other: &Self) -> bool {
+        self.subject == other.subject
+            && self.predicate == other.predicate
+            && self.object == other.object
+            && self.graph == other.graph
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Term> for Quad {
+    fn eq(&self, other: &Term) -> bool {
+        match other {
+            Term::Quad(other_q) => *self == **other_q,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Term) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl PartialEq<Quad> for Term {
+    fn eq(&self, other: &Quad) -> bool {
+        match self {
+            Term::Quad(self_q) => *other == **self_q,
+            _ => false,
+        }
+    }
+
+    fn ne(&self, other: &Quad) -> bool {
+        !self.eq(other)
     }
 }
 
 impl TermLike for Quad {
     fn value(&self) -> &str {
         ""
-    }
-
-    fn equals(&self, other: &Term) -> bool {
-        match other {
-            Term::Quad(q) => {
-                self.subject.equals(&q.subject)
-                    && self.predicate.equals(&q.predicate)
-                    && self.object.equals(&q.object)
-                    && self.graph.equals(&q.graph)
-            }
-            _ => false,
-        }
     }
 
     fn as_term(self) -> Term {
@@ -322,7 +799,7 @@ impl TermLike for Quad {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Eq, Debug)]
 pub enum Term {
     NamedNode(NamedNode),
     BlankNode(BlankNode),
@@ -330,6 +807,41 @@ pub enum Term {
     Variable(Variable),
     DefaultGraph(DefaultGraph),
     Quad(Box<Quad>),
+}
+
+impl PartialEq for Term {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Term::NamedNode(self_nn) => match other {
+                Term::NamedNode(other_nn) => self_nn == other_nn,
+                _ => false,
+            },
+            Term::BlankNode(self_bn) => match other {
+                Term::BlankNode(other_bn) => self_bn == other_bn,
+                _ => false,
+            },
+            Term::Literal(self_l) => match other {
+                Term::Literal(other_l) => self_l == other_l,
+                _ => false,
+            },
+            Term::Variable(self_v) => match other {
+                Term::Variable(other_v) => self_v == other_v,
+                _ => false,
+            },
+            Term::DefaultGraph(self_dg) => match other {
+                Term::DefaultGraph(other_dg) => self_dg == other_dg,
+                _ => false,
+            },
+            Term::Quad(self_q) => match other {
+                Term::Quad(other_q) => self_q == other_q,
+                _ => false,
+            },
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
 }
 
 impl TermLike for Term {
@@ -341,17 +853,6 @@ impl TermLike for Term {
             Term::Variable(v) => v.value(),
             Term::DefaultGraph(dg) => dg.value(),
             Term::Quad(q) => q.value(),
-        }
-    }
-
-    fn equals(&self, other: &Term) -> bool {
-        match self {
-            Term::NamedNode(nn) => nn.equals(other),
-            Term::BlankNode(bn) => bn.equals(other),
-            Term::Literal(l) => l.equals(other),
-            Term::Variable(v) => v.equals(other),
-            Term::DefaultGraph(dg) => dg.equals(other),
-            Term::Quad(q) => q.equals(other),
         }
     }
 
@@ -416,7 +917,12 @@ impl DataFactory {
         DefaultGraph::new()
     }
 
-    pub fn quad(subject: &Term, predicate: &Term, object: &Term, graph: Option<&Term>) -> Quad {
+    pub fn quad(
+        subject: &QuadSubject,
+        predicate: &QuadPredicate,
+        object: &QuadObject,
+        graph: Option<&QuadGraph>,
+    ) -> Quad {
         Quad::new(subject, predicate, object, graph)
     }
 }

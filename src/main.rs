@@ -1,6 +1,5 @@
 use rdfjs_rust::js;
 use rdfjs_rust::rs;
-use rdfjs_rust::rs::TermLike;
 
 fn main() {
     // JS
@@ -25,7 +24,12 @@ fn main() {
     let _v = rs::DataFactory::variable("v");
     let _dg = rs::DataFactory::default_graph();
 
-    let q = rs::DataFactory::quad(&nn.to_term(), &nn.to_term(), &l.to_term(), None);
+    let q = rs::DataFactory::quad(
+        &rs::QuadSubject::NamedNode(nn.clone()),
+        &rs::QuadPredicate::NamedNode(nn.clone()),
+        &rs::QuadObject::Literal(l.clone()),
+        None,
+    );
 
     print!("{:#?}", q);
 }
