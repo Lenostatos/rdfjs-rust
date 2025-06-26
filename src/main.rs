@@ -1,6 +1,10 @@
 use rdfjs_rust::js;
 use rdfjs_rust::rs;
 
+use crate::rs::quad_object::QuadObject;
+use crate::rs::quad_predicate::QuadPredicate;
+use crate::rs::quad_subject::QuadSubject;
+
 fn main() {
     // JS
     let mut factory = js::DataFactory::new();
@@ -16,18 +20,18 @@ fn main() {
     print!("{:#?}", q);
 
     // RS
-    let mut factory = rs::DataFactory::new();
+    let mut factory = rs::data_factory::DataFactory::new();
 
-    let nn = rs::DataFactory::named_node("nn");
+    let nn = rs::data_factory::DataFactory::named_node("nn");
     let _bn = factory.blank_node(None);
-    let l = rs::DataFactory::literal("l", None);
-    let _v = rs::DataFactory::variable("v");
-    let _dg = rs::DataFactory::default_graph();
+    let l = rs::data_factory::DataFactory::literal("l", None);
+    let _v = rs::data_factory::DataFactory::variable("v");
+    let _dg = rs::data_factory::DataFactory::default_graph();
 
-    let q = rs::DataFactory::quad(
-        &rs::QuadSubject::NamedNode(nn.clone()),
-        &rs::QuadPredicate::NamedNode(nn.clone()),
-        &rs::QuadObject::Literal(l.clone()),
+    let q = rs::data_factory::DataFactory::quad(
+        &QuadSubject::NamedNode(nn.clone()),
+        &QuadPredicate::NamedNode(nn.clone()),
+        &QuadObject::Literal(l.clone()),
         None,
     );
 
