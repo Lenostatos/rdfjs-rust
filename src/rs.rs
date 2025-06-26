@@ -17,6 +17,10 @@ impl NamedNode {
             value: value.to_owned(),
         }
     }
+
+    fn equals_named_node(&self, other: &Self) -> bool {
+        self.value() == other.value()
+    }
 }
 
 impl TermLike for NamedNode {
@@ -26,7 +30,7 @@ impl TermLike for NamedNode {
 
     fn equals(&self, other: &Term) -> bool {
         match other {
-            Term::NamedNode(nn) => self.value() == nn.value(),
+            Term::NamedNode(nn) => self.equals_named_node(nn),
             _ => false,
         }
     }
@@ -141,8 +145,7 @@ impl TermLike for Literal {
                 self.value() == l.value()
                     && self.language == l.language
                     && self.direction == l.direction
-                    && self.datatype == l.datatype
-                // the datatype comparison doesn't use the equals() method for performance reasons
+                    && self.datatype.equals_named_node(&l.datatype)
             }
             _ => false,
         }
