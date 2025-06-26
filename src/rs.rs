@@ -332,8 +332,8 @@ pub enum Term {
     Quad(Box<Quad>),
 }
 
-impl Term {
-    pub fn value(&self) -> &str {
+impl TermLike for Term {
+    fn value(&self) -> &str {
         match self {
             Term::NamedNode(nn) => nn.value(),
             Term::BlankNode(bn) => bn.value(),
@@ -344,7 +344,7 @@ impl Term {
         }
     }
 
-    pub fn equals(&self, other: &Term) -> bool {
+    fn equals(&self, other: &Term) -> bool {
         match self {
             Term::NamedNode(nn) => nn.equals(other),
             Term::BlankNode(bn) => bn.equals(other),
@@ -353,6 +353,14 @@ impl Term {
             Term::DefaultGraph(dg) => dg.equals(other),
             Term::Quad(q) => q.equals(other),
         }
+    }
+
+    fn as_term(self) -> Term {
+        self
+    }
+
+    fn to_term(&self) -> Term {
+        self.clone()
     }
 }
 
