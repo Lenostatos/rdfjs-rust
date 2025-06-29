@@ -4,7 +4,6 @@ pub mod default_graph;
 pub mod literal;
 pub mod named_node;
 pub mod quad;
-pub mod quad_elements;
 pub mod quad_graph;
 pub mod quad_object;
 pub mod quad_predicate;
