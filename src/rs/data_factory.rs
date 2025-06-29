@@ -1,6 +1,6 @@
 use crate::rs::blank_node::BlankNode;
 use crate::rs::default_graph::DefaultGraph;
-use crate::rs::literal::Literal;
+use crate::rs::literal::{LanguageDirection, Literal};
 use crate::rs::named_node::NamedNode;
 use crate::rs::quad::Quad;
 use crate::rs::variable::Variable;
@@ -46,7 +46,7 @@ impl DataFactory {
                 LanguageOrDatatype::DirectionalLanguage(directional_language) => Literal::new(
                     value,
                     Some(&directional_language.language),
-                    directional_language.direction.as_deref(),
+                    directional_language.direction.as_ref(),
                     None,
                 ),
             },
@@ -80,5 +80,5 @@ pub enum LanguageOrDatatype {
 
 pub struct DirectionalLanguage {
     language: String,
-    direction: Option<String>,
+    direction: Option<LanguageDirection>,
 }
