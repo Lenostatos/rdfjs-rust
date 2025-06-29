@@ -120,3 +120,73 @@ impl Display for LanguageDirection {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rs::test_data::equality_setup;
+
+    #[test]
+    fn same_literals_equal() {
+        let data = equality_setup();
+
+        assert_eq!(data.literal_foo_1, data.literal_foo_1);
+        assert_eq!(data.literal_foo_1, data.literal_foo_2);
+        assert_eq!(data.literal_foo_1, data.term_literal_foo);
+        assert_eq!(data.term_literal_foo, data.literal_foo_2);
+
+        let node_1 = Literal::new("foo", Some("gb"), None, None);
+        let node_2 = Literal::new("foo", Some("gb"), None, None);
+
+        assert_eq!(node_1, node_2);
+
+        let node_1 = Literal::new(
+            "foo",
+            Some("en"),
+            Some(&LanguageDirection::RightToLeft),
+            None,
+        );
+        let node_2 = Literal::new(
+            "foo",
+            Some("en"),
+            Some(&LanguageDirection::RightToLeft),
+            None,
+        );
+
+        assert_eq!(node_1, node_2);
+
+        let node_1 = Literal::new(
+            "foo",
+            Some("en"),
+            Some(&LanguageDirection::RightToLeft),
+            Some(&NamedNode::new("foo")),
+        );
+        let node_2 = Literal::new(
+            "foo",
+            Some("en"),
+            Some(&LanguageDirection::RightToLeft),
+            Some(&NamedNode::new("foo")),
+        );
+
+        assert_eq!(node_1, node_2);
+    }
+
+    #[test]
+    fn different_literals_not_equal() {
+        let data = equality_setup();
+
+        assert_ne!(data.literal_foo_1, data.literal_bar);
+        assert_ne!(data.literal_foo_2, data.term_literal_bar);
+        assert_ne!(data.term_literal_bar, data.literal_foo_2);
+    }
+
+    #[test]
+    fn term_inequality_works() {
+        let data = equality_setup();
+
+        assert_ne!(data.literal_foo_1, data.term_node_foo);
+        assert_ne!(data.literal_foo_1, data.term_blank_foo);
+        assert_ne!(data.literal_foo_1, data.term_variable_foo);
+        assert_ne!(data.literal_foo_1, data.term_default_graph_1);
+        assert_ne!(data.literal_foo_1, data.term_quad_foo);
+    }
+}

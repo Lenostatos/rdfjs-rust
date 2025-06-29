@@ -62,3 +62,38 @@ impl TermLike for BlankNode {
         Term::BlankNode(self.to_owned())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::rs::test_data::equality_setup;
+
+    #[test]
+    fn same_value_nodes_equal() {
+        let data = equality_setup();
+
+        assert_eq!(data.blank_foo_1, data.blank_foo_1);
+        assert_eq!(data.blank_foo_1, data.blank_foo_2);
+        assert_eq!(data.blank_foo_1, data.term_blank_foo);
+        assert_eq!(data.term_blank_foo, data.blank_foo_2);
+    }
+
+    #[test]
+    fn different_value_nodes_not_equal() {
+        let data = equality_setup();
+
+        assert_ne!(data.blank_foo_1, data.blank_bar);
+        assert_ne!(data.blank_foo_2, data.term_blank_bar);
+        assert_ne!(data.term_blank_bar, data.blank_foo_2);
+    }
+
+    #[test]
+    fn term_inequality_works() {
+        let data = equality_setup();
+
+        assert_ne!(data.blank_foo_1, data.term_node_foo);
+        assert_ne!(data.blank_foo_1, data.term_literal_foo);
+        assert_ne!(data.blank_foo_1, data.term_variable_foo);
+        assert_ne!(data.blank_foo_1, data.term_default_graph_1);
+        assert_ne!(data.blank_foo_1, data.term_quad_foo);
+    }
+}

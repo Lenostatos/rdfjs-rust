@@ -10,4 +10,5 @@ pub mod quad_predicate;
 pub mod quad_subject;
 pub mod term;
 pub mod term_like;
+pub mod test_data;
 pub mod variable;

@@ -62,3 +62,38 @@ impl TermLike for Variable {
         Term::Variable(self.to_owned())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::rs::test_data::equality_setup;
+
+    #[test]
+    fn same_value_nodes_equal() {
+        let data = equality_setup();
+
+        assert_eq!(data.variable_foo_1, data.variable_foo_1);
+        assert_eq!(data.variable_foo_1, data.variable_foo_2);
+        assert_eq!(data.variable_foo_1, data.term_variable_foo);
+        assert_eq!(data.term_variable_foo, data.variable_foo_2);
+    }
+
+    #[test]
+    fn different_value_nodes_not_equal() {
+        let data = equality_setup();
+
+        assert_ne!(data.variable_foo_1, data.variable_bar);
+        assert_ne!(data.variable_foo_2, data.term_variable_bar);
+        assert_ne!(data.term_variable_bar, data.variable_foo_2);
+    }
+
+    #[test]
+    fn term_inequality_works() {
+        let data = equality_setup();
+
+        assert_ne!(data.variable_foo_1, data.term_node_foo);
+        assert_ne!(data.variable_foo_1, data.term_blank_foo);
+        assert_ne!(data.variable_foo_1, data.term_literal_foo);
+        assert_ne!(data.variable_foo_1, data.term_default_graph_1);
+        assert_ne!(data.variable_foo_1, data.term_quad_foo);
+    }
+}
