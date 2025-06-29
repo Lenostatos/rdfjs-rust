@@ -9,10 +9,10 @@ use crate::rs::quad_subject::QuadSubject;
 
 #[derive(Clone, Eq, Debug)]
 pub struct Quad {
-    pub subject: QuadSubject,
-    pub predicate: QuadPredicate,
-    pub object: QuadObject,
-    pub graph: QuadGraph,
+    subject: QuadSubject,
+    predicate: QuadPredicate,
+    object: QuadObject,
+    graph: QuadGraph,
 }
 
 impl Quad {
@@ -32,6 +32,22 @@ impl Quad {
                 QuadGraph::DefaultGraph(DefaultGraph::new())
             },
         }
+    }
+
+    pub fn subject(&self) -> &QuadSubject {
+        &self.subject
+    }
+
+    pub fn predicate(&self) -> &QuadPredicate {
+        &self.predicate
+    }
+
+    pub fn object(&self) -> &QuadObject {
+        &self.object
+    }
+
+    pub fn graph(&self) -> &QuadGraph {
+        &self.graph
     }
 }
 

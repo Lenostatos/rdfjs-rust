@@ -3,27 +3,12 @@ use std::fmt::Display;
 use crate::rs::named_node::NamedNode;
 use crate::rs::{term::Term, term_like::TermLike};
 
-#[derive(Clone, PartialEq, Eq, Debug)]
-pub enum LanguageDirection {
-    LeftToRight,
-    RightToLeft,
-}
-
-impl Display for LanguageDirection {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            LanguageDirection::LeftToRight => write!(f, "ltr"),
-            LanguageDirection::RightToLeft => write!(f, "rtl"),
-        }
-    }
-}
-
 #[derive(Clone, Eq, Debug)]
 pub struct Literal {
     value: String,
-    pub language: String,
-    pub direction: Option<LanguageDirection>,
-    pub datatype: NamedNode,
+    language: String,
+    direction: Option<LanguageDirection>,
+    datatype: NamedNode,
 }
 
 impl Literal {
@@ -53,14 +38,26 @@ impl Literal {
             },
         }
     }
+
+    pub fn language(&self) -> &str {
+        &self.language
+    }
+
+    pub fn direction(&self) -> Option<&LanguageDirection> {
+        self.direction.as_ref()
+    }
+
+    pub fn datatype(&self) -> &NamedNode {
+        &self.datatype
+    }
 }
 
 impl PartialEq for Literal {
     fn eq(&self, other: &Self) -> bool {
         self.value() == other.value()
-            && self.language == other.language
-            && self.direction == other.direction
-            && self.datatype == other.datatype
+            && self.language() == other.language()
+            && self.direction() == other.direction()
+            && self.datatype() == other.datatype()
     }
 
     fn ne(&self, other: &Self) -> bool {
@@ -107,3 +104,19 @@ impl TermLike for Literal {
         Term::Literal(self.to_owned())
     }
 }
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum LanguageDirection {
+    LeftToRight,
+    RightToLeft,
+}
+
+impl Display for LanguageDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LanguageDirection::LeftToRight => write!(f, "ltr"),
+            LanguageDirection::RightToLeft => write!(f, "rtl"),
+        }
+    }
+}
+
